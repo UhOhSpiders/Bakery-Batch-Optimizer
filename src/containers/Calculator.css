@@ -1,0 +1,25 @@
+.calc-grid-container{
+    display: grid;
+    grid-template-columns: 4fr 1fr;
+    grid-template-rows: repeat(5, 1fr);
+    grid-gap: 10px;
+}
+
+.scraps-input-box{
+    /* grid-column-start: 2; */
+    background-color: #FFE8DE;;
+    /* padding: 10px; */
+    border-radius: 10px;
+}
+
+.eod-scraps-box{
+    /* grid-column-start: 2; */
+    background-color: #FFE8DE;;
+    /* padding: 10px; */
+    border-radius: 10px;
+}
+
+.laminated-box{
+    grid-row-start: 1;
+    grid-row-end: 6;
+}

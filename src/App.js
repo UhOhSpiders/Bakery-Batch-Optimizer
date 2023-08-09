@@ -125,14 +125,14 @@ const updateProduct = (updatedValue, product, formField) => {
 const calcScrapDoughs = () => {
   // TO DO: an estimation of the scraps that will be created the following day during the lamination/shaping process
   let futureScraps = doughsToMix * 0.3
-  
   // sets scraps aside for preferment (the scraps required for mixing fresh doughs),
   // and end of day scrap products
   let eodScrapsNeeded = 0
   eodScrapProducts.forEach((product) => eodScrapsNeeded += product.orderCount * product.weight)
   let availableScraps = Math.max(0,scraps - (doughsToMix * settings.prefermentWeight) - eodScrapsNeeded)
-  // TO DO: put a cap on this so it returns only the number of scrap doughs requires and doesn't go over
+  // TO DO: put a cap on this so it returns only the number of scrap doughs required and doesn't go over
   setScrapDoughs(Math.floor(availableScraps/settings.scrapDoughWeight))
+  assignScrapDoughs(products);
 }
 
 const totalDoughsToMix = (products) => {
@@ -140,28 +140,20 @@ const totalDoughsToMix = (products) => {
   products.forEach((product) => total += product.requiredDoubles)
   products.forEach((product) => total += product.extras)
   setDoughsToMix(Math.max(0,((total)-scrapDoughs)))
-  assignScrapDoughs(products);
+  // TO DO: move this to calcScrapDoughs?
+  // assignScrapDoughs(products);
 }
 
+// TO DO: fix this. Get the scrap doughs to asign and reset accurately
 const assignScrapDoughs = (products) => {
   let count = scrapDoughs;
-  let i = 0
-  // reset
-  // products.forEach((product) => product.scraps = 0)
-  // assign
   let assignedScrapsTotal = 0
   products.forEach((product) => assignedScrapsTotal += product.scraps)
-
-  // TO DO: fix this. Get the scrap count to asign and reset accurately
+  // add an else statement in here?
   products.forEach(product => {
     if(product.usesScraps && product.orderCount + product.extras > 0 && assignedScrapsTotal < count){
-   
-      console.log("conditions met for" + product.name)
-      console.log(product.orderCount + product.extras)
       product.scraps += 1;
   }})
-console.log ("assigned" + assignedScrapsTotal)
-console.log("count" + count)
 }
 
   return (

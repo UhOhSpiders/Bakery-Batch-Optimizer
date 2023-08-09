@@ -7,15 +7,20 @@ const LaminatedList = ({products, updateProduct}) => {
       return <LaminatedProduct product={product} key={id} updateProduct={updateProduct}/>
     })
 
-  return (
+const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+const d = new Date();
+d.setDate(d.getDate() + 2 )
+const twoDaysFromNow = days[d.getDay()]
+  
+return (
     <>
     <div className='table-grid-container'>
     <h3>Product</h3>
-    <h3>Order Quantity for Tuesday</h3>
+    <h3>Order Quantity for {twoDaysFromNow} </h3>
     <h3>Current Freezer Levels</h3>
     <h3>Doubles</h3>
-    <h3>Extras</h3>
-    <p></p>
+    <></>
+    <></>
     <hr></hr>
     
     {listItems}

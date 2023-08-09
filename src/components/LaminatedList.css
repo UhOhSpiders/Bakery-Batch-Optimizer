@@ -9,6 +9,7 @@
 
 .hasExtras{
     color: black;
+    font-weight: bold;
 }
 
 input, p, h2, h3{

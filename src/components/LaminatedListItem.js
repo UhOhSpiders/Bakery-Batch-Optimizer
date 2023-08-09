@@ -53,8 +53,8 @@ let doubles = product.requiredDoubles + product.extras
         
         <span className='doubles-cell-container'>
         <h2 className='doubles-text'>{doubles}</h2>
-        <button className={product.extras > 0 ? 'hasExtras' : 'button'} onClick={handleAddExtra} name="extras">+</button> 
-        <button onClick={handleSubtractExtra} name="extras">-</button>
+        <button title='Add extras' className={product.extras > 0 ? 'hasExtras' : 'button'} onClick={handleAddExtra} name="extras">+</button> 
+        <button title='Subtract extras'onClick={handleSubtractExtra} name="extras">-</button>
         </span>
 
 

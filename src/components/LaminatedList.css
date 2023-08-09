@@ -1,0 +1,68 @@
+.table-grid-container{
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-gap: 10px;
+    background-color: #FFF4D7;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.hasExtras{
+    color: black;
+}
+
+input, p, h2, h3{
+    align-self: end;
+    padding: 0;
+    margin: 0;
+}
+
+.doubles-cell-container{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    
+}
+
+button{
+    grid-column: 2;
+    width: 50%;
+    font-size: 20px;
+    color: grey;
+    background: none;
+    border: none;
+}
+
+button:hover{
+    color:black;
+    cursor: pointer;
+    
+}
+
+.doubles-text{
+    grid-row: 1/ 3;
+    justify-self: end;
+    font-size: 40px;
+}
+
+hr{
+    grid-column: 1 / 7;
+    width: 100%;
+}
+
+.pill{
+    padding: 5px;
+    border-radius: 15px;
+}
+
+.excess{
+    background-color: #FFD770;
+}
+
+.scraps{
+    background-color: #FF6767;
+    color: white;
+}
+
+.no-scraps{
+    background: #B4B4B4;
+}

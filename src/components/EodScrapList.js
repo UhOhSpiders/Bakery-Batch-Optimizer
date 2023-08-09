@@ -7,7 +7,10 @@ const EodScrapList = ({eodScrapProducts, updateProduct}) => {
   })
     
     return (
+      <>
+      <h4>End-of-day Scrap Products</h4>
     <div>{listItems}</div>
+    </>
   )
 }
 

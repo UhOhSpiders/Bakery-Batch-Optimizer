@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import './LaminatedListItem.css'
 
 const LaminatedListItem = ({product, updateProduct}) => {
 
@@ -41,17 +42,25 @@ let required = product.orderCount - product.freezerCount
 let howManyMade = (product.requiredDoubles + product.extras) * product.yield
 let excess = howManyMade - required
 
+let doubles = product.requiredDoubles + product.extras
+
   return (
-    <div>
+  
+    <>
         <p>{product.name}</p>
         <input type="number" placeholder='orderCount' name='orderCount' onChange={handleOrderCountChange}></input>
         <input type="number" placeholder='freezerCount' name='freezerCount' onChange={handleFreezerCountChange}></input>
-        <p>Doubles:  {product.requiredDoubles}</p>
-        <p> ~ Excess: {excess > 1 ? excess : 0}</p>
-        <p>{product.extras}</p>
-        <button onClick={handleAddExtra} name="extras">+</button>
+        
+        <span className='doubles-cell-container'>
+        <h2 className='doubles-text'>{doubles}</h2>
+        <button className={product.extras > 0 ? 'hasExtras' : 'button'} onClick={handleAddExtra} name="extras">+</button> 
         <button onClick={handleSubtractExtra} name="extras">-</button>
-    </div>
+        </span>
+
+
+        <p className='excess pill'> ~{excess > 1 ? excess : 0} excess</p>
+        {product.scraps > 0 ? <p className='scraps pill'>  {product.scraps} Scrap </p> : <p className='no-scraps pill'>No scraps</p>}
+        </>
   )
 }
 

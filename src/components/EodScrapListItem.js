@@ -13,7 +13,7 @@ const [inputOrderCount, setInputOrderCount] = useState();
 
   return (
     <>
-    <p>{product.name}</p>
+    <p>Monday's {product.name} order:</p>
     <input onChange={handleOrderCountChange} name="orderCount"></input>
     </>
   )

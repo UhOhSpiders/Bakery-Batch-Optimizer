@@ -144,16 +144,17 @@ const totalDoughsToMix = (products) => {
   // assignScrapDoughs(products);
 }
 
-// TO DO: fix this. Get the scrap doughs to asign and reset accurately
 const assignScrapDoughs = (products) => {
   let count = scrapDoughs;
   let assignedScrapsTotal = 0
   products.forEach((product) => assignedScrapsTotal += product.scraps)
-  // add an else statement in here?
   products.forEach(product => {
     if(product.usesScraps && product.orderCount + product.extras > 0 && assignedScrapsTotal < count){
       product.scraps += 1;
-  }})
+  }else if (product.scraps > product.requiredDoubles + product.extras){
+    product.scraps -= 1;
+  }
+})
 }
 
   return (

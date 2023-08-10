@@ -18,7 +18,7 @@ return (
     <h3>Product</h3>
     <h3>Order Quantity for {twoDaysFromNow} </h3>
     <h3>Current Freezer Levels</h3>
-    <h3>Doubles</h3>
+    <h3>Double Batches</h3>
     <></>
     <></>
     <hr></hr>

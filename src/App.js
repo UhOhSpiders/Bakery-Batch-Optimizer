@@ -109,17 +109,18 @@ const loadProducts = () => {
 const updateProduct = (updatedValue, product, formField) => {
   if(products.includes(product)){
     const id = product.id
-    let updateProduct = products.findIndex((product => product.id == id));
+    let updateProduct = products.findIndex((product => product.id === id));
     products[updateProduct][formField] = updatedValue;
   }else if (eodScrapProducts.includes(product)){
     const id = product.id
-    let updateProduct = eodScrapProducts.findIndex((product => product.id == id));
+    let updateProduct = eodScrapProducts.findIndex((product => product.id === id));
     eodScrapProducts[updateProduct][formField] = updatedValue;
   }
   // assigns requiredDoubles for each product
   products.forEach((product) => product.requiredDoubles = Math.max(0,Math.ceil((product.orderCount-product.freezerCount)/product.yield)));
   calcScrapDoughs();
   totalDoughsToMix(products);
+  getSplits(products);
 }
 
 const calcScrapDoughs = () => {
@@ -140,8 +141,8 @@ const totalDoughsToMix = (products) => {
   products.forEach((product) => total += product.requiredDoubles)
   products.forEach((product) => total += product.extras)
   setDoughsToMix(Math.max(0,((total)-scrapDoughs)))
-  // TO DO: move this to calcScrapDoughs?
-  // assignScrapDoughs(products);
+  
+  
 }
 
 const assignScrapDoughs = (products) => {
@@ -155,6 +156,36 @@ const assignScrapDoughs = (products) => {
     product.scraps -= 1;
   }
 })
+}
+
+const getSplits = (products) => {
+let excessFraction = 0;
+let splits = []
+// assigns excess fraction
+  products.forEach((product) => {
+    excessFraction = product.requiredDoubles - ((product.orderCount - product.freezerCount)/product.yield)
+  product.excessFraction = excessFraction
+  // console.log(product.name + " excessFraction: " + product.excessFraction)
+  }
+  )
+// looks for pairs
+  products.forEach((product) => {
+    if(product.excessFraction > 0.5){
+
+            products.forEach((pairProduct) => {
+              if(pairProduct.excessFraction > 0.5 && pairProduct != product && !product.paired){
+                console.log(product.name + pairProduct.name)
+                pairProduct.paired = true
+                splits.push({name: product.name + " " + pairProduct.name})
+              }
+            })
+    
+    
+    }
+  })
+console.log(splits)
+
+
 }
 
   return (

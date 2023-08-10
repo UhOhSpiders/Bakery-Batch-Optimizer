@@ -5,21 +5,12 @@
     grid-gap: 10px;
 }
 
-.scraps-input-box{
-    /* grid-column-start: 2; */
-    background-color: #FFE8DE;;
-    /* padding: 10px; */
-    border-radius: 10px;
-}
-
-.eod-scraps-box{
-    /* grid-column-start: 2; */
-    background-color: #FFE8DE;;
-    /* padding: 10px; */
-    border-radius: 10px;
-}
-
 .laminated-box{
     grid-row-start: 1;
     grid-row-end: 6;
+}
+
+.splitter{
+    grid-row-start:6;
+    grid-column-start: 0;
 }

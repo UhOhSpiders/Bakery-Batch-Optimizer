@@ -26,6 +26,7 @@ const laminatedProducts = [
   {
     id: 1,
     name: "Croissant",
+    pairs: [],
     yield: 26,
     usesScraps: false,
     scraps: 0,
@@ -41,6 +42,7 @@ const laminatedProducts = [
   {
     id: 2,
     name: "Pan Suisse",
+    pairs: [],
     yield: 26,
     usesScraps: true,
     scraps: 0,
@@ -57,6 +59,7 @@ const laminatedProducts = [
   {
     id: 3,
     name: "Bear Claw",
+    pairs: [],
     yield: 26,
     usesScraps: true,
     scraps: 0,
@@ -73,6 +76,7 @@ const laminatedProducts = [
   {
     id: 5,
     name: "Danish",
+    pairs: [],
     yield: 26,
     usesScraps: true,
     scraps: 0,
@@ -173,10 +177,11 @@ let splits = []
     if(product.excessFraction > 0.5){
 
             products.forEach((pairProduct) => {
-              if(pairProduct.excessFraction > 0.5 && pairProduct != product && !product.paired){
+              if(pairProduct.excessFraction > 0.5 && pairProduct !== product && !product.paired){
                 console.log(product.name + pairProduct.name)
                 pairProduct.paired = true
-                splits.push({name: product.name + " " + pairProduct.name})
+                // product.pairs.push(pairProduct.name)
+                splits.push(pairProduct)
               }
             })
     

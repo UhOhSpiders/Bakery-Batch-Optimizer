@@ -8,14 +8,20 @@ const App = () => {
   const [doughsToMix, setDoughsToMix] = useState(null);
   const [scraps, setScraps] = useState(0);
   const [scrapDoughs, setScrapDoughs] = useState(0);
+  const [assignedScrapsTotal, setAssignedScrapsTotal] = useState(0)
+  const [splits, setSplits] = useState([]);
 
   useEffect(() => {
     loadProducts();
   },[])
 
   useEffect(() => {
-    calcScrapDoughs();
+    updateProduct();
   },[scraps])
+
+  useEffect(() => {
+    removeScrapDoughs(products);
+  },[scrapDoughs])
 
   useEffect(() => {
     totalDoughsToMix(products);
@@ -122,8 +128,10 @@ const updateProduct = (updatedValue, product, formField) => {
   }
   // assigns requiredDoubles for each product
   products.forEach((product) => product.requiredDoubles = Math.max(0,Math.ceil((product.orderCount-product.freezerCount)/product.yield)));
-  calcScrapDoughs();
   totalDoughsToMix(products);
+  calcScrapDoughs();
+  removeScrapDoughs(products);
+  // assignScrapDoughs(products, product);
   getSplits(products);
 }
 
@@ -137,7 +145,6 @@ const calcScrapDoughs = () => {
   let availableScraps = Math.max(0,scraps - (doughsToMix * settings.prefermentWeight) - eodScrapsNeeded)
   // TO DO: put a cap on this so it returns only the number of scrap doughs required and doesn't go over
   setScrapDoughs(Math.floor(availableScraps/settings.scrapDoughWeight))
-  assignScrapDoughs(products);
 }
 
 const totalDoughsToMix = (products) => {
@@ -145,21 +152,70 @@ const totalDoughsToMix = (products) => {
   products.forEach((product) => total += product.requiredDoubles)
   products.forEach((product) => total += product.extras)
   setDoughsToMix(Math.max(0,((total)-scrapDoughs)))
-  
-  
 }
 
-const assignScrapDoughs = (products) => {
-  let count = scrapDoughs;
-  let assignedScrapsTotal = 0
-  products.forEach((product) => assignedScrapsTotal += product.scraps)
-  products.forEach(product => {
-    if(product.usesScraps && product.orderCount + product.extras > 0 && assignedScrapsTotal < count){
+// Doesn't work if scraps weight is changed after order numbers 
+const assignScrapDoughs = (products, assignedProduct) => {
+  console.log(products)
+  products.forEach((product) => {
+    if(product.scraps > product.requiredDoubles + product.extras && assignedScrapsTotal > 0 && product === assignedProduct){
+      product.scraps -= 1;
+      let newReducedTotal = assignedScrapsTotal - 1
+      setAssignedScrapsTotal(newReducedTotal)
+      // console.log(newReducedTotal)
+      console.log("subtracted 1 so new total is: " + newReducedTotal)
+    }else if(product.usesScraps && product.requiredDoubles + product.extras > 0 && assignedScrapsTotal < scrapDoughs && product === assignedProduct){
       product.scraps += 1;
-  }else if (product.scraps > product.requiredDoubles + product.extras){
-    product.scraps -= 1;
+      let newTotal = assignedScrapsTotal + 1
+      setAssignedScrapsTotal(newTotal)
+      console.log("added 1 so new assignedScrapsTotal is: " + newTotal)
+      console.log("scrap dough total is: " + scrapDoughs)
+    }
+  })
+}
+
+
+
+const removeScrapDoughs = (products) => {
+  let assignedScraps = 0
+  console.log("assinged scraps: " + assignedScraps)
+  
+  products.forEach((product) => {
+    if(product.scraps > product.requiredDoubles + product.extras){
+      product.scraps = product.requiredDoubles + product.extras;
+    }})
+
+  let possibleScraps = 0
+  products.forEach((product) => {
+    if(product.usesScraps){
+      possibleScraps += product.requiredDoubles + product.extras;
+      assignedScraps += product.scraps
+    }
+  })
+  
+  let counter = scrapDoughs - assignedScraps
+  console.log("counter: "+counter)
+  console.log("possible scraps : "  + possibleScraps)
+  
+  
+  while(counter > 0 && assignedScraps < possibleScraps){
+    products.forEach((product) => {
+    if(product.usesScraps && 
+      product.requiredDoubles + product.extras > 0 && 
+      product.scraps < product.requiredDoubles + product.extras){
+        
+        product.scraps += 1;
+        assignedScraps += 1
+        counter -= 1
+        console.log("counter: "+counter)
+      
+    }
+    })
+
   }
-})
+
+
+  
 }
 
 const getSplits = (products) => {
@@ -169,6 +225,7 @@ let splits = []
   products.forEach((product) => {
     excessFraction = product.requiredDoubles - ((product.orderCount - product.freezerCount)/product.yield)
   product.excessFraction = excessFraction
+  product.paired = false
   // console.log(product.name + " excessFraction: " + product.excessFraction)
   }
   )
@@ -178,7 +235,7 @@ let splits = []
 
             products.forEach((pairProduct) => {
               if(pairProduct.excessFraction > 0.5 && pairProduct !== product && !product.paired){
-                console.log(product.name + pairProduct.name)
+                // console.log(product.name + pairProduct.name)
                 pairProduct.paired = true
                 // product.pairs.push(pairProduct.name)
                 splits.push(pairProduct)
@@ -188,8 +245,8 @@ let splits = []
     
     }
   })
-console.log(splits)
-
+// console.log(splits)
+setSplits(splits)
 
 }
 

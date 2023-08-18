@@ -1,0 +1,12 @@
+.about-box{
+    background-color: #FFF4D7;
+    padding: 20px;
+    border-radius: 10px;
+    width: 50%;
+    margin: auto;
+    text-align: left;
+}
+
+h3{
+    padding: 12px;
+}

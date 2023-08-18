@@ -1,4 +1,5 @@
 import React, {useState} from 'react'
+import './SideInput.css'
 
 const ScrapsInput = ({setScraps}) => {
 
@@ -9,7 +10,7 @@ const ScrapsInput = ({setScraps}) => {
     }
 
     return (
-    <div>
+    <div className='side box'>
         <p>Scraps weight:</p>
         <input onChange={handleScrapsChange}></input>
     </div>

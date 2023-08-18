@@ -5,6 +5,8 @@
     background-color: #FFF4D7;
     padding: 20px;
     border-radius: 10px;
+    /* place-items: center; */
+    
 }
 
 .hasExtras{
@@ -66,4 +68,13 @@ hr{
 
 .no-scraps{
     background: #B4B4B4;
+}
+
+.day{
+    background: #8A55CF;
+background: linear-gradient(to right, #8A55CF 0%, #FF7033 100%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+font-weight: bolder;
+
 }

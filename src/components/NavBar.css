@@ -1,0 +1,24 @@
+.link{
+    text-decoration: none;
+    padding-left: 20px;
+    color: black;
+}
+
+.nav{
+    padding: 10px;
+    display: flex;
+    align-content: space-evenly;
+    align-items: center;
+    justify-content: space-between;
+}
+
+h1, h2{
+    padding: 0px;
+    margin: 0px;
+    
+}
+
+.nav-right{
+    display: flex;
+    justify-content: flex-end;
+}

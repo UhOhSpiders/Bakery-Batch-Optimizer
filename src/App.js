@@ -1,10 +1,15 @@
 import './App.css';
 import { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Calculator from './containers/Calculator';
+import About from './containers/about';
+import NavBar from './components/NavBar';
+import Settings from './containers/Settings'
 
 const App = () => {
   const [products, setProducts] = useState([]);
   const [eodScrapProducts, setEodScrapProducts] = useState([]);
+  const [scrapLaminatedProducts, setScrapLaminatedProducts] = useState([]);
   const [doughsToMix, setDoughsToMix] = useState(null);
   const [scraps, setScraps] = useState(0);
   const [scrapDoughs, setScrapDoughs] = useState(0);
@@ -108,9 +113,25 @@ const eodScrapProductSettings = [{
   hidden: false
 }]
 
+const scrapLaminatedProductSettings = [{
+  id: 8,
+  name: "Morning Buns",
+  yield: 26,
+  usesScraps: false,
+  minDoughWeight: 4000,
+  freezable: false,
+  hidden: false,
+  orderCount: 0,
+  freezerCount: 0,
+  requiredDoubles: 0,
+  extras: 0,
+  category: "ScrapLaminatedProduct"
+}]
+
 const loadProducts = () => {
   setProducts(laminatedProducts);
   setEodScrapProducts(eodScrapProductSettings);
+  setScrapLaminatedProducts(scrapLaminatedProductSettings);
 }
 
 // move this to calculator container?
@@ -125,21 +146,26 @@ const updateProduct = (updatedValue, product, formField) => {
     const id = product.id
     let updateProduct = eodScrapProducts.findIndex((product => product.id === id));
     eodScrapProducts[updateProduct][formField] = updatedValue;
+  }else if (scrapLaminatedProducts.includes(product)){
+    const id = product.id
+    let updateProduct = scrapLaminatedProducts.findIndex((product => product.id === id));
+    scrapLaminatedProducts[updateProduct][formField] = updatedValue;
   }
+
+
   // assigns requiredDoubles for each product
   products.forEach((product) => product.requiredDoubles = Math.max(0,Math.ceil((product.orderCount-product.freezerCount)/product.yield)));
   // updates the total doughs required
   totalDoughsToMix(products);
   // updates available scrap doughs
-  calcScrapDoughs();
+  calcScrapDoughs(scrapLaminatedProducts);
   // assigned scrap doughs to batches based on what has been ordered
   assignScrapDoughs(products);
   // identifies what batches can be combined (eg half croissant/half pan suisse)
-  // to reduce unneeded excess 
   getSplits(products);
 }
 
-const calcScrapDoughs = () => {
+const calcScrapDoughs = (scrapLaminatedProducts) => {
   // TO DO: an estimation of the scraps that will be created the following day during the lamination/shaping process
   let futureScraps = doughsToMix * 0.3
   // sets scraps aside for preferment (the scraps required for mixing fresh doughs),
@@ -170,7 +196,6 @@ const assignScrapDoughs = (products) => {
   })
   // counts "possible" scraps - eg if there were unlimited scraps how many slots should be filled
   // this value is meant to stop the loop once all possible slots have been filled
-  // (but it doesn't work and the loop doesn't stop)
   products.forEach((product) => {
     if(product.usesScraps){
       possibleScraps += product.requiredDoubles + product.extras;
@@ -228,10 +253,20 @@ setSplits(splits)
 }
 
   return (
-    <div className="App">
-    <h1>Dough Calculator</h1>
-     <Calculator products={products} eodScrapProducts={eodScrapProducts} updateProduct={updateProduct} setScraps={setScraps} scrapDoughs={scrapDoughs} doughsToMix={doughsToMix}/>
+    <Router>
+      <div className='App'>
+    <NavBar/>
+    <Routes>
+     
+     <Route path="/" element={<Calculator products={products} eodScrapProducts={eodScrapProducts} updateProduct={updateProduct} setScraps={setScraps} scrapDoughs={scrapDoughs} doughsToMix={doughsToMix} scrapLaminatedProducts={scrapLaminatedProducts}/>}/>
+     
+     <Route path="/about" element={<About/>}/>
+     
+     <Route path="/settings" element={<Settings/>}/>
+     
+     </Routes>
     </div>
+    </Router>
   );
 }
 

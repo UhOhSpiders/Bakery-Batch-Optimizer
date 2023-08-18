@@ -1,16 +1,10 @@
 .calc-grid-container{
     display: grid;
     grid-template-columns: 4fr 1fr;
-    grid-template-rows: repeat(5, 1fr);
     grid-gap: 10px;
 }
 
 .laminated-box{
     grid-row-start: 1;
-    grid-row-end: 6;
 }
 
-.splitter{
-    grid-row-start:6;
-    grid-column-start: 0;
-}

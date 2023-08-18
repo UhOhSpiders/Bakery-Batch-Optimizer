@@ -1,0 +1,20 @@
+.side{
+    background-color: #FFE8DE;
+    
+}
+
+.accent{
+    background-color:  #ffc46bcb;
+}
+
+.box{
+    padding: 20px;
+    border-radius: 10px;
+    margin: 10px;
+    margin-top: 0px;
+}
+
+h4{
+    padding: 0px;
+    margin: 0px;
+}

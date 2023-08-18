@@ -16,11 +16,10 @@ return (
     <>
     <div className='table-grid-container'>
     <h3>Product</h3>
-    <h3>Order Quantity for {twoDaysFromNow} </h3>
+    <h3>Order Quantity for <span className='day'>{twoDaysFromNow} </span></h3>
     <h3>Current Freezer Levels</h3>
     <h3>Double Batches</h3>
-    <></>
-    <></>
+    
     <hr></hr>
     
     {listItems}

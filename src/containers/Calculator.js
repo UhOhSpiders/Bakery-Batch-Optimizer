@@ -4,8 +4,11 @@ import ScrapsInput from '../components/ScrapsInput';
 import EodScrapList from '../components/EodScrapList';
 import './Calculator.css'
 import Splitter from '../components/Splitter';
+import ScrapLaminatedProductList from '../components/ScrapLaminatedProductList';
+import TotalDoughsDisplay from '../components/TotalDoughsDisplay';
+import DoughsToMix from '../components/DoughsToMix';
 
-const Calculator = ({products, updateProduct, setScraps, eodScrapProducts, scrapDoughs, doughsToMix}) => {
+const Calculator = ({products, updateProduct, setScraps, eodScrapProducts, scrapDoughs, doughsToMix, scrapLaminatedProducts}) => {
 
 let totalDoughs = doughsToMix + scrapDoughs;
 
@@ -13,13 +16,21 @@ let totalDoughs = doughsToMix + scrapDoughs;
   return (
     <>
     <div className='calc-grid-container'>
-    <div className='laminated-box'><LaminatedList products={products} updateProduct={updateProduct}/></div>
-    <ScrapsInput  setScraps={setScraps}/>
-    <EodScrapList  eodScrapProducts={eodScrapProducts} updateProduct={updateProduct}/>
-    <div><p>Total Doughs:</p> <h2>{totalDoughs}</h2></div>
-    <div><p>Scrap Doughs:</p> <h2>{scrapDoughs}</h2></div>
-    <Splitter/>
-    <span><p>Doughs to mix:</p><h1>{doughsToMix}</h1></span>
+        
+        <div className='laminated-box'>
+          <LaminatedList products={products} updateProduct={updateProduct}/>
+          <br></br>
+          <ScrapLaminatedProductList scrapLaminatedProducts={scrapLaminatedProducts} updateProduct={updateProduct}/>
+          <br></br>
+          <Splitter/>
+        </div>
+        
+        <div className='side-bar'>
+          <ScrapsInput  setScraps={setScraps}/>
+          <EodScrapList  eodScrapProducts={eodScrapProducts} updateProduct={updateProduct}/>
+          <TotalDoughsDisplay scrapDoughs={scrapDoughs} totalDoughs={totalDoughs}/>
+          <DoughsToMix doughsToMix={doughsToMix}/>
+        </div>
     </div>
     </>
   )

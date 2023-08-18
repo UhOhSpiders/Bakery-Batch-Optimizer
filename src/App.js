@@ -20,7 +20,7 @@ const App = () => {
   },[scraps])
 
   useEffect(() => {
-    removeScrapDoughs(products);
+    assignScrapDoughs(products);
   },[scrapDoughs])
 
   useEffect(() => {
@@ -128,10 +128,14 @@ const updateProduct = (updatedValue, product, formField) => {
   }
   // assigns requiredDoubles for each product
   products.forEach((product) => product.requiredDoubles = Math.max(0,Math.ceil((product.orderCount-product.freezerCount)/product.yield)));
+  // updates the total doughs required
   totalDoughsToMix(products);
+  // updates available scrap doughs
   calcScrapDoughs();
-  removeScrapDoughs(products);
-  // assignScrapDoughs(products, product);
+  // assigned scrap doughs to batches based on what has been ordered
+  assignScrapDoughs(products);
+  // identifies what batches can be combined (eg half croissant/half pan suisse)
+  // to reduce unneeded excess 
   getSplits(products);
 }
 
@@ -154,68 +158,45 @@ const totalDoughsToMix = (products) => {
   setDoughsToMix(Math.max(0,((total)-scrapDoughs)))
 }
 
-// Doesn't work if scraps weight is changed after order numbers 
-const assignScrapDoughs = (products, assignedProduct) => {
-  console.log(products)
+const assignScrapDoughs = (products) => {
+  let assignedScraps = 0
+  let possibleScraps = 0
+
+  // resets the scraps property for each product
   products.forEach((product) => {
-    if(product.scraps > product.requiredDoubles + product.extras && assignedScrapsTotal > 0 && product === assignedProduct){
-      product.scraps -= 1;
-      let newReducedTotal = assignedScrapsTotal - 1
-      setAssignedScrapsTotal(newReducedTotal)
-      // console.log(newReducedTotal)
-      console.log("subtracted 1 so new total is: " + newReducedTotal)
-    }else if(product.usesScraps && product.requiredDoubles + product.extras > 0 && assignedScrapsTotal < scrapDoughs && product === assignedProduct){
-      product.scraps += 1;
-      let newTotal = assignedScrapsTotal + 1
-      setAssignedScrapsTotal(newTotal)
-      console.log("added 1 so new assignedScrapsTotal is: " + newTotal)
-      console.log("scrap dough total is: " + scrapDoughs)
+    if(product.usesScraps){
+      product.scraps = 0;
     }
   })
-}
-
-
-
-const removeScrapDoughs = (products) => {
-  let assignedScraps = 0
-  console.log("assinged scraps: " + assignedScraps)
-  
-  products.forEach((product) => {
-    if(product.scraps > product.requiredDoubles + product.extras){
-      product.scraps = product.requiredDoubles + product.extras;
-    }})
-
-  let possibleScraps = 0
+  // counts "possible" scraps - eg if there were unlimited scraps how many slots should be filled
+  // this value is meant to stop the loop once all possible slots have been filled
+  // (but it doesn't work and the loop doesn't stop)
   products.forEach((product) => {
     if(product.usesScraps){
       possibleScraps += product.requiredDoubles + product.extras;
       assignedScraps += product.scraps
     }
   })
-  
+  // this counter should dictate how many times the loop runs
+  // if it gets to the end of the products array it should go back to the start and keep going until the counter is matched
+  // at the minute though, "i" can still just keep getting larger than "counter" and it wont break the loop
   let counter = scrapDoughs - assignedScraps
-  console.log("counter: "+counter)
-  console.log("possible scraps : "  + possibleScraps)
-  
-  
-  while(counter > 0 && assignedScraps < possibleScraps){
+  let i = 0;
+  while(i < counter && assignedScraps < possibleScraps){
     products.forEach((product) => {
-    if(product.usesScraps && 
-      product.requiredDoubles + product.extras > 0 && 
-      product.scraps < product.requiredDoubles + product.extras){
-        
-        product.scraps += 1;
-        assignedScraps += 1
-        counter -= 1
-        console.log("counter: "+counter)
-      
-    }
+    if(product.usesScraps 
+      && product.requiredDoubles + product.extras > 0 
+      && product.scraps < product.requiredDoubles + product.extras 
+      && i < counter
+      ){
+            product.scraps += 1;
+            assignedScraps += 1;
+            i += 1;
+            console.log("counter after loop has started: " + counter)
+            console.log("i after loop has started: " + i)
+      }
     })
-
   }
-
-
-  
 }
 
 const getSplits = (products) => {
@@ -226,10 +207,9 @@ let splits = []
     excessFraction = product.requiredDoubles - ((product.orderCount - product.freezerCount)/product.yield)
   product.excessFraction = excessFraction
   product.paired = false
-  // console.log(product.name + " excessFraction: " + product.excessFraction)
   }
   )
-// looks for pairs
+// looks for pairs based on whether two products have a large excess
   products.forEach((product) => {
     if(product.excessFraction > 0.5){
 
@@ -237,7 +217,6 @@ let splits = []
               if(pairProduct.excessFraction > 0.5 && pairProduct !== product && !product.paired){
                 // console.log(product.name + pairProduct.name)
                 pairProduct.paired = true
-                // product.pairs.push(pairProduct.name)
                 splits.push(pairProduct)
               }
             })
@@ -245,9 +224,7 @@ let splits = []
     
     }
   })
-// console.log(splits)
 setSplits(splits)
-
 }
 
   return (

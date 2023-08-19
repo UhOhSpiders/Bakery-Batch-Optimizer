@@ -1,12 +1,12 @@
 import React, {useState} from 'react'
 import './SideInput.css'
 
-const ScrapsInput = ({setScraps}) => {
+const ScrapsInput = ({setInputScraps}) => {
 
 
     
     const handleScrapsChange = (event) => {
-      setScraps(event.target.value)
+      setInputScraps(event.target.value)
     }
 
     return (

@@ -11,7 +11,7 @@ const App = () => {
   const [eodScrapProducts, setEodScrapProducts] = useState([]);
   const [scrapLaminatedProducts, setScrapLaminatedProducts] = useState([]);
   const [doughsToMix, setDoughsToMix] = useState(null);
-  const [scraps, setScraps] = useState(0);
+  const [inputScraps, setInputScraps] = useState(0);
   const [scrapDoughs, setScrapDoughs] = useState(0);
   const [assignedScrapsTotal, setAssignedScrapsTotal] = useState(0)
   const [splits, setSplits] = useState([]);
@@ -22,7 +22,7 @@ const App = () => {
 
   useEffect(() => {
     updateProduct();
-  },[scraps])
+  },[inputScraps])
 
   useEffect(() => {
     assignScrapDoughs(products);
@@ -116,7 +116,7 @@ const eodScrapProductSettings = [{
 const scrapLaminatedProductSettings = [{
   id: 8,
   name: "Morning Buns",
-  yield: 26,
+  yield: 40,
   usesScraps: false,
   minDoughWeight: 4000,
   freezable: false,
@@ -157,6 +157,8 @@ const updateProduct = (updatedValue, product, formField) => {
   products.forEach((product) => product.requiredDoubles = Math.max(0,Math.ceil((product.orderCount-product.freezerCount)/product.yield)));
   // updates the total doughs required
   totalDoughsToMix(products);
+
+  calcScrapLaminatedProducts(scrapLaminatedProducts);
   // updates available scrap doughs
   calcScrapDoughs(scrapLaminatedProducts);
   // assigned scrap doughs to batches based on what has been ordered
@@ -168,11 +170,19 @@ const updateProduct = (updatedValue, product, formField) => {
 const calcScrapDoughs = (scrapLaminatedProducts) => {
   // TO DO: an estimation of the scraps that will be created the following day during the lamination/shaping process
   let futureScraps = doughsToMix * 0.3
-  // sets scraps aside for preferment (the scraps required for mixing fresh doughs),
-  // and end of day scrap products
+  
+  // sets scraps aside for end of day scrap products
   let eodScrapsNeeded = 0
   eodScrapProducts.forEach((product) => eodScrapsNeeded += product.orderCount * product.weight)
-  let availableScraps = Math.max(0,scraps - (doughsToMix * settings.prefermentWeight) - eodScrapsNeeded)
+  
+  // sets aside scraps needed for laminated products which exclusively use scraps
+  let scrapLaminatedProductScraps = 0
+  scrapLaminatedProducts.forEach((product) => {
+      scrapLaminatedProductScraps += product.requiredDoubles * product.minDoughWeight
+    })
+
+    // sets scraps aside for preferment (the scraps required for mixing fresh doughs)
+  let availableScraps = Math.max(0,inputScraps - (doughsToMix * settings.prefermentWeight) - eodScrapsNeeded - scrapLaminatedProductScraps)
   // TO DO: put a cap on this so it returns only the number of scrap doughs required and doesn't go over
   setScrapDoughs(Math.floor(availableScraps/settings.scrapDoughWeight))
 }
@@ -217,8 +227,8 @@ const assignScrapDoughs = (products) => {
             product.scraps += 1;
             assignedScraps += 1;
             i += 1;
-            console.log("counter after loop has started: " + counter)
-            console.log("i after loop has started: " + i)
+            // console.log("counter after loop has started: " + counter)
+            // console.log("i after loop has started: " + i)
       }
     })
   }
@@ -226,7 +236,7 @@ const assignScrapDoughs = (products) => {
 
 const getSplits = (products) => {
 let excessFraction = 0;
-let splits = []
+
 // assigns excess fraction
   products.forEach((product) => {
     excessFraction = product.requiredDoubles - ((product.orderCount - product.freezerCount)/product.yield)
@@ -234,23 +244,35 @@ let splits = []
   product.paired = false
   }
   )
-// looks for pairs based on whether two products have a large excess
+  let splits = []
+  // looks for pairs based on whether two products have a large excess
   products.forEach((product) => {
     if(product.excessFraction > 0.5){
 
             products.forEach((pairProduct) => {
-              if(pairProduct.excessFraction > 0.5 && pairProduct !== product && !product.paired){
-                // console.log(product.name + pairProduct.name)
+              if(pairProduct.excessFraction + product.excessFraction > 1 && pairProduct !== product && !product.paired){
+                // console.log(product.name + " " +pairProduct.name)
                 pairProduct.paired = true
-                splits.push(pairProduct)
+                
+                let splitProduct = {name: `${product.name} ${pairProduct.name}`,
+                products: [product, pairProduct],
+                scraps: 0}
+              splits.push(splitProduct)
               }
             })
     
-    
+    console.log(splits)
     }
   })
 setSplits(splits)
 }
+
+const calcScrapLaminatedProducts = (scrapLaminatedProducts) => {
+  scrapLaminatedProducts.forEach((product) => 
+    product.requiredDoubles = Math.max(0,Math.ceil((product.orderCount-product.freezerCount)/product.yield)
+    ));
+  }
+    
 
   return (
     <Router>
@@ -258,7 +280,7 @@ setSplits(splits)
     <NavBar/>
     <Routes>
      
-     <Route path="/" element={<Calculator products={products} eodScrapProducts={eodScrapProducts} updateProduct={updateProduct} setScraps={setScraps} scrapDoughs={scrapDoughs} doughsToMix={doughsToMix} scrapLaminatedProducts={scrapLaminatedProducts}/>}/>
+     <Route path="/" element={<Calculator products={products} eodScrapProducts={eodScrapProducts} updateProduct={updateProduct} setInputScraps={setInputScraps} scrapDoughs={scrapDoughs} doughsToMix={doughsToMix} scrapLaminatedProducts={scrapLaminatedProducts} splits={splits}/>}/>
      
      <Route path="/about" element={<About/>}/>
      

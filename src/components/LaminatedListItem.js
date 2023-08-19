@@ -71,7 +71,7 @@ else{
     <input type="number" placeholder='freezerCount' name='freezerCount' onChange={handleFreezerCountChange}></input>
     <h2>{doubles}</h2>
     <p className='excess pill'> ~{excess > 1 ? excess : 0} excess</p>
-    <p className='scraps pill'>  Over 4000g available </p>
+    {/* <p className='scraps pill'>  Over 4000g available </p> */}
     </>
   )
 }

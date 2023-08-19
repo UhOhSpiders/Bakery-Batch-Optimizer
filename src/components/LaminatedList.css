@@ -6,7 +6,21 @@
     padding: 20px;
     border-radius: 10px;
     /* place-items: center; */
-    
+}
+
+.splitter-grid-container{
+    display: grid;
+    grid-template-columns: 0.3fr repeat(3, 1fr) 0.3fr 0.3fr;
+    grid-gap: 10px;
+    background-color: #FFF4D7;
+    padding: 20px;
+    border-radius: 10px;
+    /* place-items: center; */
+}
+
+header{
+    display: flex;
+    gap: 20px;
 }
 
 .hasExtras{
@@ -47,7 +61,7 @@ button:hover{
     font-size: 40px;
 }
 
-hr{
+hr, header, .no-splits{
     grid-column: 1 / 7;
     width: 100%;
 }

@@ -1,0 +1,27 @@
+.split-bar{
+    background-color:hsl(0, 0%, 78%);
+    grid-column-start: 2;
+    grid-column-end: 5;
+    border-radius: 5px;
+    padding: 2px;
+    display: flex;
+}
+
+.product-0{
+    background: #FF6767;
+    height: 100%;
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
+   
+}
+
+.product-1{
+    background-color: #FFC46B;
+    height: 100%;
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.checkbox{
+    width: 100%;
+}

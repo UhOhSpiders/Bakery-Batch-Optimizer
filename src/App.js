@@ -7,13 +7,12 @@ import NavBar from './components/NavBar';
 import Settings from './containers/Settings'
 
 const App = () => {
-  const [products, setProducts] = useState([]);
+  const [laminatedProducts, setLaminatedProducts] = useState([]);
   const [eodScrapProducts, setEodScrapProducts] = useState([]);
   const [scrapLaminatedProducts, setScrapLaminatedProducts] = useState([]);
   const [doughsToMix, setDoughsToMix] = useState(null);
   const [inputScraps, setInputScraps] = useState(0);
   const [scrapDoughs, setScrapDoughs] = useState(0);
-  const [assignedScrapsTotal, setAssignedScrapsTotal] = useState(0)
   const [splits, setSplits] = useState([]);
 
   useEffect(() => {
@@ -25,15 +24,23 @@ const App = () => {
   },[inputScraps])
 
   useEffect(() => {
-    assignScrapDoughs(products);
+    assignScrapDoughs(laminatedProducts);
   },[scrapDoughs])
 
   useEffect(() => {
-    totalDoughsToMix(products);
+    totalDoughsToMix(laminatedProducts);
   },[scrapDoughs])
 
+  useEffect(() => {
+    totalDoughsToMix(laminatedProducts);
+  },[splits])
 
-const laminatedProducts = [
+  useEffect(() => {
+    assignScrapDoughs(laminatedProducts);
+  },[splits])
+
+
+const laminatedProductsTemp = [
   {
     id: 1,
     name: "Croissant",
@@ -105,6 +112,7 @@ const settings = {
   scrapDoughWeight: 1800,
   prefermentWeight: 150,
 }
+// End of Day scrap products
 const eodScrapProductSettings = [{
   name: "Lemon Bun",
   id: 4,
@@ -129,19 +137,18 @@ const scrapLaminatedProductSettings = [{
 }]
 
 const loadProducts = () => {
-  setProducts(laminatedProducts);
+  setLaminatedProducts(laminatedProductsTemp);
   setEodScrapProducts(eodScrapProductSettings);
   setScrapLaminatedProducts(scrapLaminatedProductSettings);
 }
 
-// move this to calculator container?
 // find cleaner way to do this
 // have all products in single array & give each object a catergory key? 
-const updateProduct = (updatedValue, product, formField) => {
-  if(products.includes(product)){
+const updateProduct = (updatedValue, product, formField, productCategory) => {
+  if(laminatedProducts.includes(product)){
     const id = product.id
-    let updateProduct = products.findIndex((product => product.id === id));
-    products[updateProduct][formField] = updatedValue;
+    let updateProduct = laminatedProducts.findIndex((product => product.id === id));
+    laminatedProducts[updateProduct][formField] = updatedValue;
   }else if (eodScrapProducts.includes(product)){
     const id = product.id
     let updateProduct = eodScrapProducts.findIndex((product => product.id === id));
@@ -152,19 +159,42 @@ const updateProduct = (updatedValue, product, formField) => {
     scrapLaminatedProducts[updateProduct][formField] = updatedValue;
   }
 
-
   // assigns requiredDoubles for each product
-  products.forEach((product) => product.requiredDoubles = Math.max(0,Math.ceil((product.orderCount-product.freezerCount)/product.yield)));
+  laminatedProducts.forEach((product) => product.requiredDoubles = Math.max(0,Math.ceil((product.orderCount-product.freezerCount)/product.yield)));
   // updates the total doughs required
-  totalDoughsToMix(products);
+  totalDoughsToMix(laminatedProducts);
+  // identifies what batches can be combined (eg half croissant/half pan suisse)
+  getSplits(laminatedProducts);
 
   calcScrapLaminatedProducts(scrapLaminatedProducts);
   // updates available scrap doughs
   calcScrapDoughs(scrapLaminatedProducts);
   // assigned scrap doughs to batches based on what has been ordered
-  assignScrapDoughs(products);
-  // identifies what batches can be combined (eg half croissant/half pan suisse)
-  getSplits(products);
+  assignScrapDoughs(laminatedProducts, splits);
+  
+}
+
+const updateSplitProduct = (updatedSplitProduct, updatedValue) => {
+    let name = updatedSplitProduct.name
+    let updateProduct = splits.findIndex((product => product.name === name));
+    splits[updateProduct].selected = updatedValue;
+    splits[updateProduct].scraps = 0;
+    {updatedValue ? splits[updateProduct].requiredDoubles = 1 : splits[updateProduct].requiredDoubles = 0}
+
+    let updatedSplits = []
+    splits.forEach((splitProduct) => {
+      // This checks if the split product that has been selected has a component product which conflicts with a previously selected product, and then deselects the latter. The selector acts as a radio button OR checkbox depending on the combinations offered and allows the user to select more than one split if the combinations happen to allow for it
+      if(splitProduct.componentProducts.some(r=>updatedSplitProduct.componentProducts.indexOf(r) >=0) && splitProduct !== updatedSplitProduct){
+        splitProduct.requiredDoubles = 0;
+        splitProduct.scraps = 0;
+        splitProduct.selected = false;
+        splitProduct.selectable = false;
+        updatedSplits.push(splitProduct)
+      }else{
+        updatedSplits.push(splitProduct)
+      }
+    })
+  setSplits(updatedSplits)
 }
 
 const calcScrapDoughs = (scrapLaminatedProducts) => {
@@ -189,9 +219,31 @@ const calcScrapDoughs = (scrapLaminatedProducts) => {
 
 const totalDoughsToMix = (products) => {
   let total = 0;
-  products.forEach((product) => total += product.requiredDoubles)
-  products.forEach((product) => total += product.extras)
-  setDoughsToMix(Math.max(0,((total)-scrapDoughs)))
+
+laminatedProducts.forEach((product) => product.requiredDoubles = Math.max(0,Math.ceil((product.orderCount-product.freezerCount)/product.yield)));
+
+  splits.forEach((splitProduct) => {
+    if(splitProduct.selected){
+      total += splitProduct.requiredDoubles
+      splitProduct.componentProducts.forEach((componentProduct) => {
+      
+        products.forEach((product) => {
+
+          if(product == componentProduct){
+            product.requiredDoubles -= 1
+          }
+        })
+      })
+    }
+  })
+
+  products.forEach((product) => {
+    total += product.requiredDoubles
+    total += product.extras
+  })
+
+  
+  setDoughsToMix(Math.max(0,((total * 2)-scrapDoughs)))
 }
 
 const assignScrapDoughs = (products) => {
@@ -199,69 +251,92 @@ const assignScrapDoughs = (products) => {
   let possibleScraps = 0
 
   // resets the scraps property for each product
+  // counts "possible" scraps - eg if there were unlimited scraps how many slots should be filled
+  // this value stops the loop once all possible slots have been filled
   products.forEach((product) => {
     if(product.usesScraps){
       product.scraps = 0;
-    }
-  })
-  // counts "possible" scraps - eg if there were unlimited scraps how many slots should be filled
-  // this value is meant to stop the loop once all possible slots have been filled
-  products.forEach((product) => {
-    if(product.usesScraps){
       possibleScraps += product.requiredDoubles + product.extras;
       assignedScraps += product.scraps
     }
   })
-  // this counter should dictate how many times the loop runs
+if(splits){
+   splits.forEach((splitProduct) => {
+    if(splitProduct.selected){
+      splitProduct.scraps = 0;
+      possibleScraps += splitProduct.requiredDoubles;
+      assignedScraps += splitProduct.scraps
+    }
+  })
+}
+  // this counter dictates how many times the loop runs
   // if it gets to the end of the products array it should go back to the start and keep going until the counter is matched
-  // at the minute though, "i" can still just keep getting larger than "counter" and it wont break the loop
   let counter = scrapDoughs - assignedScraps
   let i = 0;
   while(i < counter && assignedScraps < possibleScraps){
     products.forEach((product) => {
     if(product.usesScraps 
-      && product.requiredDoubles + product.extras > 0 
       && product.scraps < product.requiredDoubles + product.extras 
       && i < counter
       ){
             product.scraps += 1;
             assignedScraps += 1;
             i += 1;
-            // console.log("counter after loop has started: " + counter)
-            // console.log("i after loop has started: " + i)
       }
     })
+    
+    if(splits){
+    splits.forEach((splitProduct) => {
+      if(splitProduct.componentProducts[0].usesScraps
+        && splitProduct.selected
+        && splitProduct.scraps < splitProduct.requiredDoubles 
+        && i < counter
+        ){
+              splitProduct.scraps += 1;
+              assignedScraps += 1;
+              i += 1;
+        }
+      })
+    }
+
   }
 }
 
 const getSplits = (products) => {
 let excessFraction = 0;
 
-// assigns excess fraction
+// assigns excess fraction as a decimal
   products.forEach((product) => {
-    excessFraction = product.requiredDoubles - ((product.orderCount - product.freezerCount)/product.yield)
+  excessFraction = product.requiredDoubles - ((product.orderCount - product.freezerCount)/product.yield)
   product.excessFraction = excessFraction
   product.paired = false
   }
   )
   let splits = []
-  // looks for pairs based on whether two products have a large excess
+
+  // looks for pairs based on whether two products have compatible excess
   products.forEach((product) => {
     if(product.excessFraction > 0.5){
 
             products.forEach((pairProduct) => {
-              if(pairProduct.excessFraction + product.excessFraction > 1 && pairProduct !== product && !product.paired){
-                // console.log(product.name + " " +pairProduct.name)
+              if(pairProduct.excessFraction + product.excessFraction > 1 && pairProduct !== product 
+                // this stops every possible combination
+                && !product.paired
+                ){
+
                 pairProduct.paired = true
                 
-                let splitProduct = {name: `${product.name} ${pairProduct.name}`,
-                products: [product, pairProduct],
-                scraps: 0}
+                let splitProduct = 
+                {
+                  name: `${product.name} ${pairProduct.name}`,
+                  componentProducts: [product, pairProduct],
+                  scraps: 0,
+                  selected: false,
+                  requiredDoubles: 1,
+                }
               splits.push(splitProduct)
               }
             })
-    
-    console.log(splits)
     }
   })
 setSplits(splits)
@@ -280,7 +355,7 @@ const calcScrapLaminatedProducts = (scrapLaminatedProducts) => {
     <NavBar/>
     <Routes>
      
-     <Route path="/" element={<Calculator products={products} eodScrapProducts={eodScrapProducts} updateProduct={updateProduct} setInputScraps={setInputScraps} scrapDoughs={scrapDoughs} doughsToMix={doughsToMix} scrapLaminatedProducts={scrapLaminatedProducts} splits={splits}/>}/>
+     <Route path="/" element={<Calculator products={laminatedProducts} eodScrapProducts={eodScrapProducts} updateProduct={updateProduct} setInputScraps={setInputScraps} scrapDoughs={scrapDoughs} doughsToMix={doughsToMix} scrapLaminatedProducts={scrapLaminatedProducts} splits={splits} updateSplitProduct={updateSplitProduct}/>}/>
      
      <Route path="/about" element={<About/>}/>
      

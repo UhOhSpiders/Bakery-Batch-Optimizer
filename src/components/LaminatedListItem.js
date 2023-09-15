@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, {  useState } from 'react'
 import './LaminatedListItem.css'
 
 const LaminatedListItem = ({product, updateProduct}) => {
@@ -26,7 +26,8 @@ const handleAddExtra = (event) => {
   setExtras(product.extras + 1)
   let extras = product.extras + 1;
   let formField = event.target.name
-  updateProduct(extras, product, formField)
+  let category = "laminatedProducts"
+  updateProduct(extras, product, formField, category)
 }
 
 const handleSubtractExtra = (event) => {

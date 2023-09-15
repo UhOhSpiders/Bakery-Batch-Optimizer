@@ -8,7 +8,7 @@ import ScrapLaminatedProductList from '../components/ScrapLaminatedProductList';
 import TotalDoughsDisplay from '../components/TotalDoughsDisplay';
 import DoughsToMix from '../components/DoughsToMix';
 
-const Calculator = ({products, updateProduct, setInputScraps, eodScrapProducts, scrapDoughs, doughsToMix, scrapLaminatedProducts, splits}) => {
+const Calculator = ({products, updateProduct, setInputScraps, eodScrapProducts, scrapDoughs, doughsToMix, scrapLaminatedProducts, splits, updateSplitProduct}) => {
 
 let totalDoughs = doughsToMix + scrapDoughs;
 
@@ -22,7 +22,7 @@ let totalDoughs = doughsToMix + scrapDoughs;
           <br></br>
           <ScrapLaminatedProductList scrapLaminatedProducts={scrapLaminatedProducts} updateProduct={updateProduct}/>
           <br></br>
-          <Splitter splits={splits}/>
+          <Splitter splits={splits} updateSplitProduct={updateSplitProduct}/>
         </div>
         
         <div className='side-bar'>

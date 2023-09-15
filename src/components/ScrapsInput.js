@@ -12,7 +12,7 @@ const ScrapsInput = ({setInputScraps}) => {
     return (
     <div className='side box'>
         <p>Scraps weight:</p>
-        <input onChange={handleScrapsChange}></input>
+        <input type="number" onChange={handleScrapsChange}></input>
     </div>
   )
 }

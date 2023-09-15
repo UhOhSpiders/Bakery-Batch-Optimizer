@@ -2,9 +2,9 @@ import React from 'react'
 import './LaminatedList.css'
 import SplitProduct from './SplitProduct'
 
-const Splitter = ({splits}) => {
+const Splitter = ({splits, updateSplitProduct}) => {
     const listItems = splits.map((splitProduct, id) => {
-      return <SplitProduct splitProduct={splitProduct} key={id}/>
+      return <SplitProduct splitProduct={splitProduct} key={id} updateSplitProduct={updateSplitProduct}/>
     })
 
   return (

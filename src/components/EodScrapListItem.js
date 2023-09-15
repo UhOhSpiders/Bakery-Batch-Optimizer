@@ -20,7 +20,7 @@ const oneDayFromNow = days[d.getDay()]
   return (
     <>
     <span><p className='day'>{oneDayFromNow}'s </p> <p>{product.name} order:</p></span>
-    <input onChange={handleOrderCountChange} name="orderCount"></input>
+    <input onChange={handleOrderCountChange} type="number" name="orderCount"></input>
     </>
   )
 }

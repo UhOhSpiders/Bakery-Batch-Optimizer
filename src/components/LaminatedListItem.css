@@ -3,7 +3,7 @@
     grid-column-start: 2;
     grid-column-end: 5;
     border-radius: 5px;
-    padding: 2px;
+    padding: 3px;
     display: flex;
 }
 
@@ -22,6 +22,8 @@
     border-top-right-radius: 5px;
 }
 
-.checkbox{
-    width: 100%;
+.split-button{
+    color: black;
+    grid-column: 1; 
 }
+

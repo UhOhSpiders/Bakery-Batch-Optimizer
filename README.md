@@ -23,5 +23,4 @@ Then, in the project directory:
 
 ### `npm start`
 
-This is a live project and the next stages of development are the addition of an API driven backend through ExpressJS and MongoDB.
 

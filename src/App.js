@@ -241,8 +241,6 @@ laminatedProducts.forEach((product) => product.requiredDoubles = Math.max(0,Math
     total += product.requiredDoubles
     total += product.extras
   })
-
-  
   setDoughsToMix(Math.max(0,((total * 2)-scrapDoughs)))
 }
 
@@ -320,7 +318,7 @@ let excessFraction = 0;
 
             products.forEach((pairProduct) => {
               if(pairProduct.excessFraction + product.excessFraction > 1 && pairProduct !== product 
-                // this stops every possible combination
+                // this stops every possible combination being shown
                 && !product.paired
                 ){
 

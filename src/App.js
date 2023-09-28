@@ -25,17 +25,11 @@ const App = () => {
 
   useEffect(() => {
     assignScrapDoughs(laminatedProducts);
-  },[scrapDoughs])
-
-  useEffect(() => {
     totalDoughsToMix(laminatedProducts);
   },[scrapDoughs])
 
   useEffect(() => {
     totalDoughsToMix(laminatedProducts);
-  },[splits])
-
-  useEffect(() => {
     assignScrapDoughs(laminatedProducts);
   },[splits])
 

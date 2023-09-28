@@ -173,35 +173,14 @@ const updateProduct = (updatedValue, product, formField) => {
       setEodScrapProducts(updatedEodScrapProducts)
       break;
     default:
-      console.log(`Sorry, we are out of ${product.name}.`);
+      console.log(`Error ${product.name}.`);
   }
 
   recalculate();
   
 }
 
-const updateSplitProduct = (updatedSplitProduct, updatedValue) => {
-    let name = updatedSplitProduct.name
-    let updateProduct = splits.findIndex((product => product.name === name));
-    splits[updateProduct].selected = updatedValue;
-    splits[updateProduct].scraps = 0;
-    {updatedValue ? splits[updateProduct].requiredDoubles = 1 : splits[updateProduct].requiredDoubles = 0}
 
-    let updatedSplits = []
-    splits.forEach((splitProduct) => {
-      // This checks if the split product that has been selected has a component product which conflicts with a previously selected product, and then deselects the latter. The selector acts as a radio button OR checkbox depending on the combinations offered and allows the user to select more than one split if the combinations happen to allow for it
-      if(splitProduct.componentProducts.some(r=>updatedSplitProduct.componentProducts.indexOf(r) >=0) && splitProduct !== updatedSplitProduct){
-        splitProduct.requiredDoubles = 0;
-        splitProduct.scraps = 0;
-        splitProduct.selected = false;
-        splitProduct.selectable = false;
-        updatedSplits.push(splitProduct)
-      }else{
-        updatedSplits.push(splitProduct)
-      }
-    })
-  setSplits(updatedSplits)
-}
 
 const calcScrapDoughs = (scrapLaminatedProducts) => {
   // TO DO: an estimation of the scraps that will be created the following day during the lamination/shaping process
@@ -373,7 +352,7 @@ const calcScrapLaminatedProducts = (scrapLaminatedProducts) => {
     <NavBar/>
     <Routes>
      
-     <Route path="/" element={<Calculator products={laminatedProducts} eodScrapProducts={eodScrapProducts} updateProduct={updateProduct} setInputScraps={setInputScraps} scrapDoughs={scrapDoughs} doughsToMix={doughsToMix} scrapLaminatedProducts={scrapLaminatedProducts} splits={splits} updateSplitProduct={updateSplitProduct}/>}/>
+     <Route path="/" element={<Calculator products={laminatedProducts} eodScrapProducts={eodScrapProducts} updateProduct={updateProduct} setInputScraps={setInputScraps} scrapDoughs={scrapDoughs} doughsToMix={doughsToMix} scrapLaminatedProducts={scrapLaminatedProducts} splits={splits} setSplits={setSplits}/>}/>
      
      <Route path="/about" element={<About/>}/>
      

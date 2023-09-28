@@ -20,7 +20,7 @@ const App = () => {
   },[])
 
   useEffect(() => {
-    updateProduct();
+    recalculate();
   },[inputScraps])
 
   useEffect(() => {
@@ -33,10 +33,11 @@ const App = () => {
     assignScrapDoughs(laminatedProducts);
   },[splits])
 
-
+  // This is a placeholder for an API response
 const laminatedProductsTemp = [
   {
     id: 1,
+    category: "laminated",
     name: "Croissant",
     pairs: [],
     yield: 26,
@@ -53,6 +54,7 @@ const laminatedProductsTemp = [
   },
   {
     id: 2,
+    category: "laminated",
     name: "Pan Suisse",
     pairs: [],
     yield: 26,
@@ -70,6 +72,7 @@ const laminatedProductsTemp = [
   ,
   {
     id: 3,
+    category: "laminated",
     name: "Bear Claw",
     pairs: [],
     yield: 26,
@@ -87,6 +90,7 @@ const laminatedProductsTemp = [
   ,
   {
     id: 5,
+    category: "laminated",
     name: "Danish",
     pairs: [],
     yield: 26,
@@ -107,17 +111,19 @@ const settings = {
   prefermentWeight: 150,
 }
 // End of Day scrap products
-const eodScrapProductSettings = [{
+const eodScrapProductsTemp = [{
   name: "Lemon Bun",
   id: 4,
+  category: "eodScrap",
   weight: 110,
   orderCount: 0,
   hidden: false
 }]
 
-const scrapLaminatedProductSettings = [{
+const scrapLaminatedProductsTemp = [{
   id: 8,
   name: "Morning Buns",
+  category: "scrapLaminated",
   yield: 40,
   usesScraps: false,
   minDoughWeight: 4000,
@@ -126,45 +132,51 @@ const scrapLaminatedProductSettings = [{
   orderCount: 0,
   freezerCount: 0,
   requiredDoubles: 0,
-  extras: 0,
-  category: "ScrapLaminatedProduct"
+  extras: 0
 }]
 
 const loadProducts = () => {
   setLaminatedProducts(laminatedProductsTemp);
-  setEodScrapProducts(eodScrapProductSettings);
-  setScrapLaminatedProducts(scrapLaminatedProductSettings);
+  setEodScrapProducts(eodScrapProductsTemp);
+  setScrapLaminatedProducts(scrapLaminatedProductsTemp);
 }
 
 // find cleaner way to do this
 // have all products in single array & give each object a catergory key? 
-const updateProduct = (updatedValue, product, formField, productCategory) => {
-  if(laminatedProducts.includes(product)){
-    const id = product.id
-    let updateProduct = laminatedProducts.findIndex((product => product.id === id));
-    laminatedProducts[updateProduct][formField] = updatedValue;
-  }else if (eodScrapProducts.includes(product)){
-    const id = product.id
-    let updateProduct = eodScrapProducts.findIndex((product => product.id === id));
-    eodScrapProducts[updateProduct][formField] = updatedValue;
-  }else if (scrapLaminatedProducts.includes(product)){
-    const id = product.id
-    let updateProduct = scrapLaminatedProducts.findIndex((product => product.id === id));
-    scrapLaminatedProducts[updateProduct][formField] = updatedValue;
+const updateProduct = (updatedValue, product, formField) => {
+  const updateProductArrayById = (products) => {
+    return products.map(p => {
+      // return updated product
+      if (p.id == product.id) {
+        return {
+          ...p,
+          [formField]: updatedValue,
+        };
+      } 
+      // not a match return original product
+      else {
+        return p
+      }
+    });
+  }
+  switch (product.category) {
+    case 'laminated':
+      const updatedLaminatedProducts = updateProductArrayById(laminatedProducts)
+      setLaminatedProducts(updatedLaminatedProducts)
+      break;
+    case 'scrapLaminated':
+      const updatedScrapLaminatedProducts = updateProductArrayById(scrapLaminatedProducts)
+      setScrapLaminatedProducts(updatedScrapLaminatedProducts)
+      break;
+    case 'eodScrap':
+      const updatedEodScrapProducts = updateProductArrayById(eodScrapProducts)
+      setEodScrapProducts(updatedEodScrapProducts)
+      break;
+    default:
+      console.log(`Sorry, we are out of ${product.name}.`);
   }
 
-  // assigns requiredDoubles for each product
-  laminatedProducts.forEach((product) => product.requiredDoubles = Math.max(0,Math.ceil((product.orderCount-product.freezerCount)/product.yield)));
-  // updates the total doughs required
-  totalDoughsToMix(laminatedProducts);
-  // identifies what batches can be combined (eg half croissant/half pan suisse)
-  getSplits(laminatedProducts);
-
-  calcScrapLaminatedProducts(scrapLaminatedProducts);
-  // updates available scrap doughs
-  calcScrapDoughs(scrapLaminatedProducts);
-  // assigned scrap doughs to batches based on what has been ordered
-  assignScrapDoughs(laminatedProducts, splits);
+  recalculate();
   
 }
 
@@ -338,6 +350,20 @@ const calcScrapLaminatedProducts = (scrapLaminatedProducts) => {
   scrapLaminatedProducts.forEach((product) => 
     product.requiredDoubles = Math.max(0,Math.ceil((product.orderCount-product.freezerCount)/product.yield)
     ));
+  }
+
+  function recalculate() {
+    laminatedProducts.forEach((product) => product.requiredDoubles = Math.max(0, Math.ceil((product.orderCount - product.freezerCount) / product.yield)));
+    // updates the total doughs required
+    totalDoughsToMix(laminatedProducts);
+    // identifies what batches can be combined (eg half croissant/half pan suisse)
+    getSplits(laminatedProducts);
+  
+    calcScrapLaminatedProducts(scrapLaminatedProducts);
+    // updates available scrap doughs
+    calcScrapDoughs(scrapLaminatedProducts);
+    // assigned scrap doughs to batches based on what has been ordered
+    assignScrapDoughs(laminatedProducts, splits);
   }
     
 

@@ -26,8 +26,8 @@ const handleAddExtra = (event) => {
   setExtras(product.extras + 1)
   let extras = product.extras + 1;
   let formField = event.target.name
-  let category = "laminatedProducts"
-  updateProduct(extras, product, formField, category)
+ 
+  updateProduct(extras, product, formField, product.category)
 }
 
 const handleSubtractExtra = (event) => {
@@ -44,7 +44,7 @@ let howManyMade = (product.requiredDoubles + product.extras) * product.yield
 let excess = howManyMade - required
 let doubles = product.requiredDoubles + product.extras
 
-if(!product.category){  
+
 return (
   
     <>
@@ -63,22 +63,6 @@ return (
         {product.scraps > 0 ? <p className='scraps pill'>  {product.scraps} Scrap </p> : <p className='no-scraps pill'>No scraps</p>}
         </>
   )
-}
-else{
-  return(
-    <>
-    <p>{product.name}</p>
-    <input type="number" placeholder='orderCount' name='orderCount' onChange={handleOrderCountChange}></input>
-    <input type="number" placeholder='freezerCount' name='freezerCount' onChange={handleFreezerCountChange}></input>
-    <h2>{doubles}</h2>
-    <p className='excess pill'> ~{excess > 1 ? excess : 0} excess</p>
-    {/* <p className='scraps pill'>  Over 4000g available </p> */}
-    </>
-  )
-}
-
-
-
 }
 
 export default LaminatedListItem;

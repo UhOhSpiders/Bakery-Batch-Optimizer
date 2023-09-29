@@ -175,7 +175,7 @@ const updateProduct = (updatedValue, product, formField) => {
     default:
       console.log(`Error ${product.name}.`);
   }
-
+  
   recalculate();
   
 }

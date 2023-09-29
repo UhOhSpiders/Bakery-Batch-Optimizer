@@ -4,6 +4,7 @@ import SplitProduct from './SplitProduct'
 
 const Splitter = ({splits, setSplits}) => {
 
+    // This checks if the split product that has been selected has a component product which conflicts with a previously selected product, and then deselects the latter. The selector acts as a radio button OR checkbox depending on the combinations offered and allows the user to select more than one split if the combinations happen to allow for it
   const updateSplitProduct = (updatedSplitProduct, selected) => {
     let conflictingSplits = []
     const updatedSplits = splits.map(product => {
@@ -17,7 +18,6 @@ const Splitter = ({splits, setSplits}) => {
               return updatedSplitProduct.componentProducts.includes(componentProduct) && splitProduct !== updatedSplitProduct
             });
         });
-          
         return {
           ...product,
           selected: selected,
@@ -37,6 +37,7 @@ const Splitter = ({splits, setSplits}) => {
 
     setSplits(updatedSplits)
 }
+
 
     const listItems = splits.map((splitProduct, id) => {
       return <SplitProduct splitProduct={splitProduct} key={id} updateSplitProduct={updateSplitProduct}/>

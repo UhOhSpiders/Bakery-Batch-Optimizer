@@ -1,0 +1,14 @@
+[{
+    "id": 8,
+    "name": "Morning Buns",
+    "category": "scrapLaminated",
+    "yield": 40,
+    "usesScraps": false,
+    "minDoughWeight": 4000,
+    "freezable": false,
+    "hidden": false,
+    "orderCount": 0,
+    "freezerCount": 0,
+    "requiredDoubles": 0,
+    "extras": 0
+  }]

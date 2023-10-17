@@ -5,19 +5,21 @@ import Calculator from './containers/Calculator';
 import About from './containers/about';
 import NavBar from './components/NavBar';
 import Settings from './containers/Settings'
+import laminatedProductsTemp from './temp_data/laminatedProductsTemp'
+import eodScrapProductsTemp from './temp_data/eodScrapProductsTemp.json'
+import scrapLaminatedProductsTemp from './temp_data/scrapLaminatedProductsTemp.json'
+import settingsTemp from './temp_data/settingsTemp.json'
 
 const App = () => {
-  const [laminatedProducts, setLaminatedProducts] = useState([]);
-  const [eodScrapProducts, setEodScrapProducts] = useState([]);
-  const [scrapLaminatedProducts, setScrapLaminatedProducts] = useState([]);
+  const [laminatedProducts, setLaminatedProducts] = useState(laminatedProductsTemp);
+  const [eodScrapProducts, setEodScrapProducts] = useState(eodScrapProductsTemp);
+  const [scrapLaminatedProducts, setScrapLaminatedProducts] = useState(scrapLaminatedProductsTemp);
+  const [settings, setSettings] = useState(settingsTemp)
   const [doughsToMix, setDoughsToMix] = useState(null);
   const [inputScraps, setInputScraps] = useState(0);
   const [scrapDoughs, setScrapDoughs] = useState(0);
   const [splits, setSplits] = useState([]);
 
-  useEffect(() => {
-    loadProducts();
-  },[])
 
   useEffect(() => {
     recalculate();
@@ -32,114 +34,6 @@ const App = () => {
     totalDoughsToMix(laminatedProducts);
     assignScrapDoughs(laminatedProducts);
   },[splits])
-
-  // This is a placeholder for an API response
-const laminatedProductsTemp = [
-  {
-    id: 1,
-    category: "laminated",
-    name: "Croissant",
-    pairs: [],
-    yield: 26,
-    usesScraps: false,
-    scraps: 0,
-    freezable: false,
-    width: 26,
-    folds: "bookBook",
-    hidden: false,
-    orderCount: 0,
-    freezerCount: 0,
-    requiredDoubles: 0,
-    extras: 0,
-  },
-  {
-    id: 2,
-    category: "laminated",
-    name: "Pan Suisse",
-    pairs: [],
-    yield: 26,
-    usesScraps: true,
-    scraps: 0,
-    freezable: true,
-    width: 26,
-    folds: "bookBook",
-    hidden: false,
-    orderCount: 0,
-    freezerCount: 0,
-    requiredDoubles: 0,
-    extras: 0
-  }
-  ,
-  {
-    id: 3,
-    category: "laminated",
-    name: "Bear Claw",
-    pairs: [],
-    yield: 26,
-    usesScraps: true,
-    scraps: 0,
-    freezable: true,
-    width: 26,
-    folds: "bookBook",
-    hidden: false,
-    orderCount: 0,
-    freezerCount: 0,
-    requiredDoubles: 0,
-    extras: 0
-  }
-  ,
-  {
-    id: 5,
-    category: "laminated",
-    name: "Danish",
-    pairs: [],
-    yield: 26,
-    usesScraps: true,
-    scraps: 0,
-    freezable: true,
-    width: 26,
-    folds: "bookBook",
-    hidden: false,
-    orderCount: 0,
-    freezerCount: 0,
-    requiredDoubles: 0,
-    extras: 0
-  }
-]
-const settings = {
-  scrapDoughWeight: 1800,
-  prefermentWeight: 150,
-}
-// End of Day scrap products
-const eodScrapProductsTemp = [{
-  name: "Lemon Bun",
-  id: 4,
-  category: "eodScrap",
-  weight: 110,
-  orderCount: 0,
-  hidden: false
-}]
-
-const scrapLaminatedProductsTemp = [{
-  id: 8,
-  name: "Morning Buns",
-  category: "scrapLaminated",
-  yield: 40,
-  usesScraps: false,
-  minDoughWeight: 4000,
-  freezable: false,
-  hidden: false,
-  orderCount: 0,
-  freezerCount: 0,
-  requiredDoubles: 0,
-  extras: 0
-}]
-
-const loadProducts = () => {
-  setLaminatedProducts(laminatedProductsTemp);
-  setEodScrapProducts(eodScrapProductsTemp);
-  setScrapLaminatedProducts(scrapLaminatedProductsTemp);
-}
 
 // find cleaner way to do this
 // have all products in single array & give each object a catergory key? 
@@ -179,8 +73,6 @@ const updateProduct = (updatedValue, product, formField) => {
   recalculate();
   
 }
-
-
 
 const calcScrapDoughs = (scrapLaminatedProducts) => {
   // TO DO: an estimation of the scraps that will be created the following day during the lamination/shaping process

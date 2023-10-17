@@ -36,12 +36,10 @@ const App = () => {
 
   useEffect(() => {
     calcRequiredDoubles(laminatedProducts);
-    totalDoughsToMix(laminatedProducts, "triggered by splits ");
+    totalDoughsToMix(scrapLaminatedProducts);
     assignScrapDoughs(laminatedProducts);
   }, [splits]);
 
-  // find cleaner way to do this
-  // have all products in single array & give each object a catergory key?
   const updateProduct = (updatedValue, product, formField) => {
     const updateProductArrayById = (products) => {
       return products.map((p) => {
@@ -204,7 +202,6 @@ const App = () => {
 
   const getSplits = (products, log) => {
     let excessFraction = 0;
-    // console.log("get splits " + log)
     // assigns excess fraction as a decimal
     products.forEach((product) => {
       excessFraction =
@@ -214,9 +211,13 @@ const App = () => {
       product.paired = false;
     });
     let splits = [];
-
     // looks for pairs based on whether two products have compatible excess
     products.forEach((product) => {
+      excessFraction =
+        product.requiredDoubles -
+        (product.orderCount - product.freezerCount) / product.yield;
+      product.excessFraction = excessFraction;
+      product.paired = false;
       if (product.excessFraction > 0.5) {
         products.forEach((pairProduct) => {
           if (
